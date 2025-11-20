@@ -26,9 +26,15 @@ use crate::v101::ownership_voucher::OvHeader;
 use crate::v101::{Message, Msgtype};
 use crate::Error;
 
+/// ```cddl
+/// DI.SetCredentials = [
+///     bstr .cbor OVHeader
+/// ]
+/// ```
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) struct SetCredentials<'a> {
-    pub(crate) ov_header: CborBstr<'a, OvHeader<'a>>,
+pub struct SetCredentials<'a> {
+    /// Ownership voucher header
+    pub ov_header: CborBstr<'a, OvHeader<'a>>,
 }
 
 impl Serialize for SetCredentials<'_> {

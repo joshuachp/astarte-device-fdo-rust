@@ -24,8 +24,13 @@ use crate::error::ErrorKind;
 use crate::v101::{Message, Msgtype};
 use crate::Error;
 
+/// Indicates successful completion of the DI protocol.
+///
+/// ```cddl
+/// DI.Done = [] ;; empty message
+/// ```
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) struct Done;
+pub struct Done;
 
 impl Serialize for Done {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>

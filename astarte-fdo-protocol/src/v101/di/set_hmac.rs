@@ -27,9 +27,14 @@ use crate::Error;
 
 use super::done::Done;
 
+/// ```cddl
+/// DI.SetHMAC = [
+///     Hmac
+/// ]
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) struct SetHmac<'a> {
-    pub(crate) hmac: HMac<'a>,
+pub struct SetHmac<'a> {
+    /// HMac signed by the device
+    pub hmac: HMac<'a>,
 }
 
 impl Serialize for SetHmac<'_> {

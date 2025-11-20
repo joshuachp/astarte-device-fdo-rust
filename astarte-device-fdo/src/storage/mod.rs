@@ -16,6 +16,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+use std::future::Future;
 use std::io;
 use std::path::PathBuf;
 
@@ -32,26 +33,20 @@ pub(crate) trait Storage: Send + Sync {
         &self,
         file: &str,
         content: &[u8],
-    ) -> impl std::future::Future<Output = Result<(), Error>> + Send;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Creates and writes a file, errors if already exists.
-    fn write(
-        &self,
-        file: &str,
-        content: &[u8],
-    ) -> impl std::future::Future<Output = Result<(), Error>> + Send;
+    fn write(&self, file: &str, content: &[u8]) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Creates and writes a file, truncates any existing one.
     fn overwrite(
         &self,
         file: &str,
         content: &[u8],
-    ) -> impl std::future::Future<Output = Result<(), Error>> + Send;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    fn read(
-        &self,
-        file: &str,
-    ) -> impl std::future::Future<Output = Result<Option<Vec<u8>>, Error>> + Send;
+    /// Reads a files if it exists.
+    fn read(&self, file: &str) -> impl Future<Output = Result<Option<Vec<u8>>, Error>> + Send;
 
     /// Reads a files that is a secret.
     fn read_secret(
@@ -61,7 +56,8 @@ pub(crate) trait Storage: Send + Sync {
         async { self.read(file).await.map(|value| value.map(Zeroizing::new)) }
     }
 
-    fn exists(&self, file: &str) -> impl std::future::Future<Output = Result<bool, Error>> + Send;
+    /// Checks if a file exists.
+    fn exists(&self, file: &str) -> impl Future<Output = Result<bool, Error>> + Send;
 }
 
 #[derive(Debug, Clone)]

@@ -47,7 +47,7 @@ use crate::v101::public_key::{PkEnc, PkType};
 /// [C client]: https://github.com/fido-device-onboard/client-sdk-fidoiot/
 /// [Java client]: https://github.com/fido-device-onboard/pri-fidoiot
 #[derive(Clone)]
-pub(crate) struct MfgInfo<'a> {
+pub struct MfgInfo<'a> {
     pk_type: PkType,
     pk_enc: PkEnc,
     serial_no: Cow<'a, str>,

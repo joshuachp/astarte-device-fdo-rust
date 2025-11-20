@@ -28,13 +28,20 @@ use crate::Error;
 
 use super::set_credentials::SetCredentials;
 
+/// ```cddl
+/// DI.AppStart = [
+///     DeviceMfgInfo
+/// ]
+/// DeviceMfgInfo = bstr .cbor any
+/// ```
 #[derive(Debug)]
-pub(crate) struct AppStart<'a, T> {
+pub struct AppStart<'a, T> {
     device_mfg_info: CborBstr<'a, T>,
 }
 
 impl<'a, T> AppStart<'a, T> {
-    pub(crate) fn new(device_mfg_info: T) -> Self {
+    /// Create the AppStart message with the given manufacturing info
+    pub fn new(device_mfg_info: T) -> Self {
         Self {
             device_mfg_info: CborBstr::new(device_mfg_info),
         }
