@@ -16,6 +16,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+//! Device Initialization
+
 use std::borrow::Cow;
 
 use astarte_fdo_protocol::error::ErrorKind;

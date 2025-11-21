@@ -27,13 +27,17 @@ use crate::v101::rv_to2_addr::RvTo2Addr;
 use crate::v101::{Message, Msgtype};
 use crate::Error;
 
+/// ```cddl
+/// TO1.RVRedirect = to1d
+/// ```
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) struct RvRedirect {
+pub struct RvRedirect {
     pub(crate) to1d: CoseSign1,
 }
 
 impl RvRedirect {
-    pub(crate) fn rv_to2_addr(&self) -> Result<To1dBlob<'_>, Error> {
+    /// Parses the Rendezvous blob
+    pub fn rv_to2_addr(&self) -> Result<To1dBlob<'_>, Error> {
         let payload = self.to1d.payload.as_deref().ok_or(Error::new(
             ErrorKind::Invalid,
             "RvRedirect payload is missing",
@@ -95,8 +99,14 @@ impl Message for RvRedirect {
     }
 }
 
+/// ```cddl
+/// to1dBlobPayload = [
+///     to1dRV:       RVTO2Addr, ;; choices to access TO2 protocol
+///     to1dTo0dHash: Hash       ;; Hash of to0d from same to0 message
+/// ]
+/// ```
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) struct To1dBlob<'a> {
+pub struct To1dBlob<'a> {
     pub(crate) to1d_rv: RvTo2Addr<'a>,
     pub(crate) to1d_to0d_hash: Hash<'a>,
 }

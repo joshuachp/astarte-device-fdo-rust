@@ -25,10 +25,25 @@ use crate::v101::sign_info::EBSigInfo;
 use crate::v101::{Message, Msgtype, NonceTo1Proof};
 use crate::Error;
 
+/// ```cddl
+/// TO1.HelloRVAck = [
+///     NonceTO1Proof,
+///     eBSigInfo
+/// ]
+/// ```
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) struct HelloRvAck<'a> {
+pub struct HelloRvAck<'a> {
     pub(crate) nonce_to1_proof: NonceTo1Proof,
     pub(crate) e_a_sig_info: EBSigInfo<'a>,
+}
+
+impl<'a> HelloRvAck<'a> {
+    /// Returns the rendezvous nonce.
+    ///
+    /// This is used to prove the device.
+    pub fn nonce_to1_proof(&self) -> NonceTo1Proof {
+        self.nonce_to1_proof
+    }
 }
 
 impl Serialize for HelloRvAck<'_> {

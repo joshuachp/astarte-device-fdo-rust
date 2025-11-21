@@ -27,10 +27,27 @@ use crate::Error;
 
 use super::hello_rv_ack::HelloRvAck;
 
+/// ```cddl
+/// TO1.HelloRV = [
+///     Guid,
+///     eASigInfo
+/// ]
+/// ```
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) struct HelloRv<'a> {
+pub struct HelloRv<'a> {
+    /// The device GUID.
+    ///
+    /// This is used as an index by the Rendezvous Server to look up information associated with the Device.
     pub(crate) guid: Guid,
+    /// Signature info for device attestation.
     pub(crate) e_a_sig_info: EASigInfo<'a>,
+}
+
+impl<'a> HelloRv<'a> {
+    /// Creates the HelloRV with the given signature information.
+    pub fn new(guid: Guid, e_a_sig_info: EASigInfo<'a>) -> Self {
+        Self { guid, e_a_sig_info }
+    }
 }
 
 impl Serialize for HelloRv<'_> {

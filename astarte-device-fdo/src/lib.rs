@@ -25,6 +25,7 @@ pub mod crypto;
 pub mod storage;
 
 pub mod di;
+pub mod to1;
 
 pub use astarte_fdo_protocol;
 

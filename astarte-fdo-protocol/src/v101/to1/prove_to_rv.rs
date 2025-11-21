@@ -26,9 +26,22 @@ use crate::Error;
 
 use super::rv_redirect::RvRedirect;
 
+/// ```cddl
+/// TO1.ProveToRV = EAToken
+/// $$EATPayloadBase //= (
+///     EAT-NONCE: NonceTO1Proof
+/// )
+/// ```
 #[derive(Debug, Clone, PartialEq)]
-pub(crate) struct ProveToRv {
+pub struct ProveToRv {
     pub(crate) ea_token: CoseSign1,
+}
+
+impl ProveToRv {
+    /// Create a ProveToRv from an EAT
+    pub fn new(ea_token: CoseSign1) -> Self {
+        Self { ea_token }
+    }
 }
 
 impl Message for ProveToRv {

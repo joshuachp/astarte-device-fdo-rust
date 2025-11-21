@@ -28,7 +28,7 @@ use astarte_fdo_protocol::v101::{
 use astarte_fdo_protocol::Error;
 use coset::{CoseEncrypt0, TaggedCborSerializable};
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, AUTHORIZATION, CONTENT_TYPE};
-use tracing::{debug, error};
+use tracing::{debug, error, trace};
 use url::Url;
 
 use crate::crypto::Crypto;
@@ -143,17 +143,7 @@ impl<A, E> Client<A, E> {
 
         // TODO: should check the error code
         if msg_type == ErrorMessage::MSG_TYPE {
-            let bytes = response.bytes().await.map_err(|err| {
-                error!(error = %err, "request errord");
-
-                Error::new(ErrorKind::Io, "request")
-            })?;
-
-            let error: ErrorMessage = ciborium::from_reader(bytes.as_ref()).map_err(|err| {
-                error!(error = %err, "couldn't parse response body");
-
-                Error::new(ErrorKind::Invalid, "response body")
-            })?;
+            let error: ErrorMessage = Self::parse_msg(response).await?;
 
             error!(%error, "error messagage received");
 
@@ -182,6 +172,8 @@ impl<A, E> Client<A, E> {
 
             Error::new(ErrorKind::Io, "request")
         })?;
+
+        trace!(msg = %astarte_fdo_protocol::utils::Hex::new(&bytes));
 
         let value = T::decode(&bytes)?;
 
