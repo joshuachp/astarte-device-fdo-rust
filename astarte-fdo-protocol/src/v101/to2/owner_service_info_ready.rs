@@ -30,8 +30,15 @@ use crate::Error;
 /// ]
 /// maxDeviceServiceInfoSz = uint16 / null
 /// ```
-pub(crate) struct OwnerServiceInfoReady {
+pub struct OwnerServiceInfoReady {
     pub(crate) max_device_service_info_sz: Option<u16>,
+}
+
+impl OwnerServiceInfoReady {
+    /// Return the owner max size
+    pub fn max_size(&self) -> Option<u16> {
+        self.max_device_service_info_sz
+    }
 }
 
 impl Serialize for OwnerServiceInfoReady {

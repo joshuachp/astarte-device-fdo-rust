@@ -47,6 +47,13 @@ pub struct ProveDevice {
     pub(crate) sign: EaToken,
 }
 
+impl ProveDevice {
+    /// Create the prove device with the EAT
+    pub fn new(sign: EaToken) -> Self {
+        Self { sign }
+    }
+}
+
 impl Message for ProveDevice {
     const MSG_TYPE: Msgtype = 64;
 

@@ -34,10 +34,13 @@ use crate::Error;
 /// IsDone = bool
 /// ```
 #[derive(Debug)]
-pub(crate) struct OwnerServiceInfo<'a> {
-    pub(crate) is_more_service_info: bool,
-    pub(crate) is_done: bool,
-    pub(crate) service_info: ServiceInfo<'a>,
+pub struct OwnerServiceInfo<'a> {
+    /// Check if owner has more more
+    pub is_more_service_info: bool,
+    /// Check if owner is done.
+    pub is_done: bool,
+    /// The service info
+    pub service_info: ServiceInfo<'a>,
 }
 
 impl Serialize for OwnerServiceInfo<'_> {

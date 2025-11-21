@@ -22,6 +22,7 @@ use std::io::Write;
 use serde::{Deserialize, Serialize};
 
 use crate::error::ErrorKind;
+use crate::v101::key_exchange::KexSuitNames;
 use crate::v101::sign_info::EASigInfo;
 use crate::v101::{ClientMessage, Guid, InitialMessage, Message, Msgtype, NonceTo2ProveOv};
 use crate::Error;
@@ -42,13 +43,34 @@ use super::prove_ov_hdr::ProveOvHdr;
 /// cipherSuiteName = CipherSuites
 /// ```
 #[derive(Debug)]
-pub(crate) struct HelloDevice<'a> {
+pub struct HelloDevice<'a> {
     pub(crate) max_device_message_size: u16,
     pub(crate) guid: Guid,
     pub(crate) nonce: NonceTo2ProveOv,
     pub(crate) kex_suite_name: Cow<'a, str>,
     pub(crate) cipher_suite_name: i64,
     pub(crate) ea_sign_info: EASigInfo<'a>,
+}
+
+impl<'a> HelloDevice<'a> {
+    /// Creates the HelloDevice message.
+    pub fn new(
+        max_device_message_size: u16,
+        guid: Guid,
+        nonce: NonceTo2ProveOv,
+        kex_suite_name: KexSuitNames,
+        cipher_suite_name: i64,
+        ea_sign_info: EASigInfo<'a>,
+    ) -> Self {
+        Self {
+            max_device_message_size,
+            guid,
+            nonce,
+            kex_suite_name: kex_suite_name.as_str().into(),
+            cipher_suite_name,
+            ea_sign_info,
+        }
+    }
 }
 
 impl Serialize for HelloDevice<'_> {

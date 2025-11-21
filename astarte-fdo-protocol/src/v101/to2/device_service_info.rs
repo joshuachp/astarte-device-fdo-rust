@@ -35,14 +35,15 @@ use super::owner_service_info::OwnerServiceInfo;
 /// ]
 /// IsMoreServiceInfo = bool
 /// ```
-pub(crate) struct DeviceServiceInfo<'a> {
+pub struct DeviceServiceInfo<'a> {
     pub(crate) is_more_service_info: bool,
     pub(crate) service_info: ServiceInfo<'a>,
 }
 
 impl DeviceServiceInfo<'_> {
     // TODO: lol
-    pub(crate) fn example() -> Self {
+    /// Example bogus info
+    pub fn example() -> Self {
         // devmod:active 	Required 	bool (True) 	Indicates the module is active. Devmod is required on all devices
         // devmod:os 	Required 	tstr 	OS name (e.g., Linux)
         // devmod:arch 	Required 	tstr 	Architecture name / instruction set (e.g., X86_64)

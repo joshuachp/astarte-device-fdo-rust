@@ -36,6 +36,11 @@ pub struct RvRedirect {
 }
 
 impl RvRedirect {
+    /// Returns the to1d signed blob
+    pub fn to1d(&self) -> &CoseSign1 {
+        &self.to1d
+    }
+
     /// Parses the Rendezvous blob
     pub fn rv_to2_addr(&self) -> Result<To1dBlob<'_>, Error> {
         let payload = self.to1d.payload.as_deref().ok_or(Error::new(
@@ -109,6 +114,13 @@ impl Message for RvRedirect {
 pub struct To1dBlob<'a> {
     pub(crate) to1d_rv: RvTo2Addr<'a>,
     pub(crate) to1d_to0d_hash: Hash<'a>,
+}
+
+impl<'a> To1dBlob<'a> {
+    /// Returns the address.
+    pub fn take_to1d_rv(self) -> RvTo2Addr<'a> {
+        self.to1d_rv
+    }
 }
 
 impl Serialize for To1dBlob<'_> {

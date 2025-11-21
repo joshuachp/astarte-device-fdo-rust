@@ -30,8 +30,15 @@ use crate::Error;
 ///                    ;; ...and sent to Device ROE in Msg TO2.ProveOVHdr
 /// ]
 /// ```
-pub(crate) struct Done {
+pub struct Done {
     pub(crate) nonce_to2_prove_dv: NonceTo2ProveDv,
+}
+
+impl Done {
+    /// Create the done message
+    pub fn new(nonce_to2_prove_dv: NonceTo2ProveDv) -> Self {
+        Self { nonce_to2_prove_dv }
+    }
 }
 
 impl Serialize for Done {
@@ -91,8 +98,15 @@ impl ClientMessage for Done {
 ///                    ;; ...and sent to Device ROE in Msg TO2.ProveOVHdr
 /// ]
 /// ```
-pub(crate) struct Done2 {
+pub struct Done2 {
     pub(crate) nonce_to2_setup_dv: NonceTo2SetupDv,
+}
+
+impl Done2 {
+    /// Return the nonce
+    pub fn nonce(&self) -> &NonceTo2SetupDv {
+        &self.nonce_to2_setup_dv
+    }
 }
 
 impl Serialize for Done2 {

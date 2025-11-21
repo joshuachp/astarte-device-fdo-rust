@@ -33,8 +33,15 @@ use super::ov_next_entry::OvNextEntry;
 /// OVEntryNum = uint8
 /// ```
 #[derive(Debug)]
-pub(crate) struct GetOvNextEntry {
+pub struct GetOvNextEntry {
     pub(crate) ov_entry_num: u8,
+}
+
+impl GetOvNextEntry {
+    /// Crete the message.
+    pub fn new(ov_entry_num: u8) -> Self {
+        Self { ov_entry_num }
+    }
 }
 
 impl Serialize for GetOvNextEntry {

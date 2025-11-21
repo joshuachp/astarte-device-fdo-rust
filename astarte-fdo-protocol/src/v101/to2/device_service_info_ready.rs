@@ -37,9 +37,19 @@ use super::owner_service_info_ready::OwnerServiceInfoReady;
 /// maxOwnerServiceInfoSz = uint16 / null
 /// ```
 #[derive(Debug)]
-pub(crate) struct DeviceServiceInfoReady<'a> {
+pub struct DeviceServiceInfoReady<'a> {
     pub(crate) replacement_hmac: Option<HMac<'a>>,
     pub(crate) max_owner_service_info_sz: Option<u16>,
+}
+
+impl<'a> DeviceServiceInfoReady<'a> {
+    /// Creates the message
+    pub fn new(replacement_hmac: Option<HMac<'a>>, max_owner_service_info_sz: Option<u16>) -> Self {
+        Self {
+            replacement_hmac,
+            max_owner_service_info_sz,
+        }
+    }
 }
 
 impl Serialize for DeviceServiceInfoReady<'_> {

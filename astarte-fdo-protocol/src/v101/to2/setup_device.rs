@@ -52,6 +52,11 @@ pub struct SetupDevice {
 }
 
 impl SetupDevice {
+    /// Return the Cose signature
+    pub fn sign(&self) -> &CoseSign1 {
+        &self.sign
+    }
+
     /// Decodes the COSE payload.
     pub fn payload(&self) -> Result<SetupDevicePayload<'static>, Error> {
         let payload = self.sign.payload.as_deref().ok_or(Error::new(
@@ -127,6 +132,18 @@ pub struct SetupDevicePayload<'a> {
     pub(crate) guid: Guid,
     pub(crate) nonce_to2_setup_dv: NonceTo2SetupDv,
     pub(crate) owner_2_key: PublicKey<'a>,
+}
+
+impl<'a> SetupDevicePayload<'a> {
+    /// Return the owner replacement key
+    pub fn ow_pubkey(&self) -> &PublicKey<'a> {
+        &self.owner_2_key
+    }
+
+    /// Return the setup device Nonce
+    pub fn nonce(&self) -> &NonceTo2SetupDv {
+        &self.nonce_to2_setup_dv
+    }
 }
 
 impl Serialize for SetupDevicePayload<'_> {

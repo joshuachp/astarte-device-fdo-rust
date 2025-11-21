@@ -36,12 +36,18 @@ use crate::Error;
 /// TO2.ProveOVHdr = CoseSignature
 /// ```
 #[derive(Debug)]
-pub(crate) struct ProveOvHdr {
+pub struct ProveOvHdr {
     pub(crate) sign: CoseSign1,
 }
 
 impl ProveOvHdr {
-    pub(crate) fn payload(&self) -> Result<PvOvHdrPayload<'static>, Error> {
+    /// Returns the singed Cose
+    pub fn sign(&self) -> &CoseSign1 {
+        &self.sign
+    }
+
+    /// Returns the decoded Cose payload
+    pub fn payload(&self) -> Result<PvOvHdrPayload<'static>, Error> {
         let payload = self.sign.payload.as_deref().ok_or(Error::new(
             ErrorKind::Invalid,
             "the TO2.ProveOvHdr payload is missing",
@@ -55,7 +61,8 @@ impl ProveOvHdr {
         })
     }
 
-    pub(crate) fn header(&self) -> Result<PvOvHdrUnprotected<'static>, Error> {
+    /// Returns the decoded Cose header
+    pub fn header(&self) -> Result<PvOvHdrUnprotected<'static>, Error> {
         let pubkey_param = Label::Int(HeaderParameter::CuphOwnerPubKey.to_i64());
 
         let pubkey = self
@@ -169,15 +176,23 @@ impl Message for ProveOvHdr {
 /// maxOwnerMessageSize = uint16
 /// ```
 #[derive(Debug)]
-pub(crate) struct PvOvHdrPayload<'a> {
-    pub(crate) ov_header: CborBstr<'a, OvHeader<'a>>,
-    pub(crate) num_ov_entries: u8,
-    pub(crate) hmac: HMac<'a>,
-    pub(crate) nonce_to2_prove_ov: NonceTo2ProveOv,
-    pub(crate) eb_sign_info: EBSigInfo<'a>,
-    pub(crate) x_a_key_exchange: XAKeyExchange<'a>,
-    pub(crate) hello_device_hash: Hash<'a>,
-    pub(crate) max_owner_message_size: u16,
+pub struct PvOvHdrPayload<'a> {
+    /// Ownership Voucher header
+    pub ov_header: CborBstr<'a, OvHeader<'a>>,
+    /// Number of ownership voucher entries
+    pub num_ov_entries: u8,
+    /// Ownership Voucher "hmac" of hdr
+    pub hmac: HMac<'a>,
+    /// nonce from TO2.HelloDevice
+    pub nonce_to2_prove_ov: NonceTo2ProveOv,
+    /// Device attestation signature info
+    pub eb_sign_info: EBSigInfo<'a>,
+    /// Key exchange first step
+    pub x_a_key_exchange: XAKeyExchange<'a>,
+    /// hash of HelloDevice message
+    pub hello_device_hash: Hash<'a>,
+    /// Max ownership message size
+    pub max_owner_message_size: u16,
 }
 
 impl Serialize for PvOvHdrPayload<'_> {
@@ -248,7 +263,19 @@ impl<'de> Deserialize<'de> for PvOvHdrPayload<'_> {
 ///     TO2ProveOVHdrUnprotectedHeaders
 /// )
 /// ```
-pub(crate) struct PvOvHdrUnprotected<'a> {
+pub struct PvOvHdrUnprotected<'a> {
     pub(crate) cuph_nonce: NonceTo2ProveDv,
     pub(crate) cuph_owner_pubkey: PublicKey<'a>,
+}
+
+impl<'a> PvOvHdrUnprotected<'a> {
+    /// Public key
+    pub fn pubkey(&self) -> &PublicKey<'a> {
+        &self.cuph_owner_pubkey
+    }
+
+    /// Nonce
+    pub fn take_nonce(self) -> NonceTo2ProveDv {
+        self.cuph_nonce
+    }
 }

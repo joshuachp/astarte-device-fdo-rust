@@ -32,9 +32,26 @@ use crate::Error;
 /// OVEntryNum = uint8
 /// ```
 #[derive(Debug)]
-pub(crate) struct OvNextEntry {
+pub struct OvNextEntry {
     pub(crate) ov_entry_num: u8,
     pub(crate) ov_entry: OvEntry,
+}
+
+impl OvNextEntry {
+    /// Returns the entry num
+    pub fn num(&self) -> u8 {
+        self.ov_entry_num
+    }
+
+    /// Returns the ov entry
+    pub fn ov_entry(&self) -> &OvEntry {
+        &self.ov_entry
+    }
+
+    /// Returns the ov entry
+    pub fn tak_ov_entry(self) -> OvEntry {
+        self.ov_entry
+    }
 }
 
 impl Serialize for OvNextEntry {

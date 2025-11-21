@@ -26,6 +26,7 @@ pub mod storage;
 
 pub mod di;
 pub mod to1;
+pub mod to2;
 
 pub use astarte_fdo_protocol;
 
