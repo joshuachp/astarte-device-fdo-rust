@@ -24,6 +24,7 @@
 //! through another link in the chain.
 
 use std::borrow::Cow;
+use std::fmt::Display;
 
 use coset::{AsCborValue, CoseSign1};
 use serde::{Deserialize, Serialize};
@@ -57,6 +58,32 @@ pub struct OwnershipVoucher<'a> {
     ov_header_hmac: HMac<'a>,
     ov_dev_cert_chain: OVDevCertChainOrNull<'a>,
     ov_entry_array: OvEntries,
+}
+
+impl Display for OwnershipVoucher<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let Self {
+            ov_prot_ver,
+            ov_header_tag,
+            ov_header_hmac,
+            ov_dev_cert_chain,
+            ov_entry_array,
+        } = self;
+
+        if f.alternate() {
+            writeln!(f, "OwnershipVoucher {{")?;
+            writeln!(f, "    ov_prtover: {ov_prot_ver:#}")?;
+            writeln!(f, "    ov_header_tag: {ov_header_tag:#}")?;
+            writeln!(f, "    ov_header_hmac: {ov_header_hmac:#}")?;
+            writeln!(f, "}}")
+        } else {
+            write!(f, "OwnershipVoucher {{")?;
+            write!(f, "ov_prtover: {ov_prot_ver}")?;
+            write!(f, ", ov_header_tag: {ov_header_tag}")?;
+            write!(f, ", ov_header_hmac: {ov_header_hmac}")?;
+            write!(f, "}}")
+        }
+    }
 }
 
 impl Serialize for OwnershipVoucher<'_> {
@@ -124,6 +151,43 @@ pub struct OvHeader<'a> {
     pub ov_pub_key: PublicKey<'a>,
     /// Device certificate chain
     pub ov_dev_cert_chain_hash: OvDevCertChainHashOrNull<'a>,
+}
+
+impl Display for OvHeader<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let Self {
+            ovh_prot_ver,
+            ov_guid,
+            ov_rv_info,
+            ov_device_info,
+            ov_pub_key,
+            ov_dev_cert_chain_hash,
+        } = self;
+
+        if f.alternate() {
+            writeln!(f, "OvHeader {{")?;
+            writeln!(f, "    ovh_prot_ver: {ovh_prot_ver}")?;
+            writeln!(f, "    ov_guid: {ov_guid}")?;
+            // TODO
+            writeln!(f, "    ov_rv_info: TODO")?;
+            writeln!(f, "    ov_device_info: {ov_device_info}")?;
+            // TODO
+            writeln!(f, "    ov_pub_key: TODO")?;
+            writeln!(f, "    ov_dev_cert_chain_hash: TODO")?;
+            writeln!(f, "}}")
+        } else {
+            write!(f, "OvHeader {{")?;
+            write!(f, "ovh_prot_ver: {ovh_prot_ver}")?;
+            write!(f, ", ov_guid: {ov_guid}")?;
+            // TODO
+            write!(f, ", ov_rv_info: TODO")?;
+            write!(f, ", ov_device_info: {ov_device_info}")?;
+            // TODO
+            write!(f, ", ov_pub_key: TODO")?;
+            write!(f, ", ov_dev_cert_chain_hash: TODO")?;
+            write!(f, "}}")
+        }
+    }
 }
 
 impl Serialize for OvHeader<'_> {

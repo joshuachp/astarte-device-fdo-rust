@@ -37,7 +37,9 @@ webpki-roots = ["dep:webpki-roots"]
 
 [dependencies]
 astarte-device-fdo.workspace = true
+base64.workspace = true
 cfg-if.workspace = true
+ciborium.workspace = true
 clap = { workspace = true, features = ["derive"] }
 color-eyre.workspace = true
 eyre.workspace = true
