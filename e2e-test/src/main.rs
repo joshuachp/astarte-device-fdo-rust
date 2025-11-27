@@ -20,6 +20,9 @@ use std::path::PathBuf;
 
 use astarte_device_fdo::Ctx;
 use astarte_device_fdo::astarte_fdo_protocol::utils::Hex;
+use astarte_device_fdo::astarte_fdo_protocol::v101::device_credentials::DeviceCredential;
+use astarte_device_fdo::astarte_fdo_protocol::v101::hash_hmac::HMac;
+use astarte_device_fdo::astarte_fdo_protocol::v101::ownership_voucher::OwnershipVoucher;
 use astarte_device_fdo::client::http::InitialClient;
 use astarte_device_fdo::crypto::Crypto;
 use astarte_device_fdo::crypto::software::SoftwareCrypto;
@@ -28,8 +31,9 @@ use astarte_device_fdo::srv_info::{AstarteMod, AstarteModBuilder, SkipServiceInf
 use astarte_device_fdo::storage::{FileStorage, Storage};
 use astarte_device_fdo::to1::To1;
 use astarte_device_fdo::to2::{Hello, To2};
+use base64::Engine;
 use clap::{Parser, Subcommand};
-use eyre::{bail, eyre};
+use eyre::{Context, OptionExt, bail, eyre};
 use tracing::info;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
@@ -47,6 +51,16 @@ struct Cli {
 
 #[derive(Debug, Clone, Subcommand)]
 enum Command {
+    Debug {
+        #[command(subcommand)]
+        file: DebugFile,
+    },
+    Verify {
+        #[arg(long, default_value = ".tmp/fdo-astarte")]
+        storage: PathBuf,
+        #[command(subcommand)]
+        file: VerifyFile,
+    },
     PlainFs {
         #[arg(long, default_value = ".tmp/fdo-astarte")]
         storage: PathBuf,
@@ -73,6 +87,20 @@ enum Command {
 
         #[command(subcommand)]
         proto: Protocol,
+    },
+}
+
+#[derive(Debug, Clone, Subcommand)]
+enum DebugFile {
+    Ov { file: PathBuf },
+    Dc { file: PathBuf },
+}
+#[derive(Debug, Clone, Subcommand)]
+enum VerifyFile {
+    Hmac {
+        hex: String,
+        #[arg(long)]
+        data: String,
     },
 }
 
@@ -212,9 +240,78 @@ async fn main() -> eyre::Result<()> {
         }
     };
 
-    let tls = tls;
-
     match cli.command {
+        Command::Debug {
+            file: DebugFile::Ov { file },
+        } => {
+            let vaucher = tokio::fs::read_to_string(&file).await?;
+
+            let vaucher = vaucher
+                .trim()
+                .strip_prefix("-----BEGIN OWNERSHIP VOUCHER-----")
+                .ok_or_eyre("missing ov header")?;
+
+            let vaucher = vaucher
+                .strip_suffix("-----END OWNERSHIP VOUCHER-----")
+                .ok_or_eyre("missing footer")?;
+
+            let vaucher: String = vaucher.split_ascii_whitespace().collect();
+
+            let vaucher = base64::engine::general_purpose::STANDARD.decode(vaucher)?;
+
+            let ov: OwnershipVoucher = ciborium::from_reader(vaucher.as_slice())?;
+
+            info!("{ov:#}")
+        }
+        Command::Debug {
+            file: DebugFile::Dc { file },
+        } => {
+            let content = tokio::fs::read(&file).await?;
+
+            let dc: DeviceCredential = ciborium::from_reader(content.as_slice())?;
+
+            info!("{dc:#?}")
+        }
+        Command::Verify {
+            storage,
+            file: VerifyFile::Hmac { hex, data },
+        } => {
+            let mut store = FileStorage::open(storage).await?;
+
+            let mut crypto = SoftwareCrypto::create(store.clone()).await?;
+
+            let mut ctx = Ctx::new(&mut crypto, &mut store, tls);
+            let cred = Di::read_existing(&mut ctx)
+                .await?
+                .ok_or_eyre("device credentials is missing")?;
+
+            let bytes = hex
+                .as_bytes()
+                .chunks_exact(2)
+                .map(|str| {
+                    let str = str::from_utf8(str)?;
+
+                    u8::from_str_radix(str, 16).wrap_err("couldn't decode hex")
+                })
+                .collect::<eyre::Result<Vec<u8>>>()?;
+
+            let hmac = HMac::with_sha256(std::borrow::Cow::Owned(bytes.into()))
+                .ok_or_eyre("invalid hmac")?;
+
+            let data = data
+                .as_bytes()
+                .chunks_exact(2)
+                .map(|str| {
+                    let str = str::from_utf8(str)?;
+
+                    u8::from_str_radix(str, 16).wrap_err("couldn't decode hex")
+                })
+                .collect::<eyre::Result<Vec<u8>>>()?;
+
+            crypto
+                .verify_hmac(&cred.dc_hmac_secret, &hmac, &data)
+                .await?;
+        }
         Command::PlainFs { storage, proto } => {
             let mut storage = FileStorage::open(storage).await?;
             let mut crypto = SoftwareCrypto::create(storage.clone()).await?;

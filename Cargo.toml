@@ -62,6 +62,7 @@ zeroize = "1.8.2"
 
 # Dev
 cfg-if = "1.0.4"
+base64 = "0.22.1"
 clap = "4.5.53"
 color-eyre = "0.6.5"
 eyre = "0.6.12"

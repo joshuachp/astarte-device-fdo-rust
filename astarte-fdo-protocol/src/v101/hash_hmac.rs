@@ -19,7 +19,7 @@
 //! Protocol digests and signatures
 
 use std::borrow::Cow;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 
 use serde::{Deserialize, Serialize};
 use serde_bytes::Bytes;
@@ -87,6 +87,12 @@ impl Debug for Hash<'_> {
             .field("hashtype", &hashtype)
             .field("hash", &Hex::new(hash))
             .finish()
+    }
+}
+
+impl Display for Hash<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}:{}", self.hashtype, Hex::new(&self.hash))
     }
 }
 
@@ -174,6 +180,12 @@ impl<'de> Deserialize<'de> for HMac<'_> {
     }
 }
 
+impl Display for HMac<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(&self.0, f)
+    }
+}
+
 /// ```cddl
 /// hashtype = (
 ///     SHA256: -16,
@@ -233,6 +245,17 @@ impl TryFrom<i8> for Hashtype {
 impl From<Hashtype> for i8 {
     fn from(value: Hashtype) -> Self {
         value as i8
+    }
+}
+
+impl Display for Hashtype {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Hashtype::Sha256 => write!(f, "sha256"),
+            Hashtype::Sha384 => write!(f, "sha384"),
+            Hashtype::HmacSha256 => write!(f, "hmac-sha256"),
+            Hashtype::HmacSha384 => write!(f, "hmac-sha384"),
+        }
     }
 }
 

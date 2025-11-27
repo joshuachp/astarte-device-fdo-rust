@@ -66,6 +66,35 @@ impl<'a, T> CborBstr<'a, T> {
     }
 }
 
+impl<T> Display for CborBstr<'_, T>
+where
+    T: Display + Serialize,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if f.alternate() {
+            writeln!(f, "bstr .cbor {{")?;
+            writeln!(
+                f,
+                "    bytes: {},",
+                Hex::new(self.bytes().unwrap_or(&Cow::Owned(ByteBuf::new())))
+            )?;
+
+            writeln!(f, "    value: {},", self.value)?;
+            writeln!(f, "}}")
+        } else {
+            write!(f, "bstr .cbor {{")?;
+            write!(
+                f,
+                "bytes: {}",
+                Hex::new(self.bytes().unwrap_or(&Cow::Owned(ByteBuf::new())))
+            )?;
+
+            write!(f, ", value: {},", self.value)?;
+            write!(f, "}}")
+        }
+    }
+}
+
 impl<'a, T> Deref for CborBstr<'a, T> {
     type Target = T;
 
