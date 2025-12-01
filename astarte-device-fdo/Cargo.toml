@@ -37,8 +37,11 @@ astarte-fdo-protocol.workspace = true
 aws-lc-rs.workspace = true
 ciborium.workspace = true
 coset.workspace = true
+futures-core.workspace = true
+futures-util.workspace = true
 nix = { workspace = true, features = ["ioctl"] }
 p256 = { workspace = true, optional = true, default-features = false, features = ["ecdsa-core", "alloc"] }
+pin-project-lite.workspace = true
 rand = { workspace = true, default-features = false, features = ["os_rng", "thread_rng"] }
 rcgen = { workspace = true, default-features = false, features = ["crypto", "pem", "aws_lc_rs"] }
 reqwest = { workspace = true, default-features = false, features = ["charset", "http2", "system-proxy", "rustls-tls-manual-roots-no-provider"] }
@@ -46,6 +49,9 @@ rustls.workspace = true
 serde.workspace = true
 serde_bytes.workspace = true
 tokio = { workspace = true, features = ["fs"] }
+tower = { workspace = true, features = ["util"] }
+tower-service.workspace = true
+tower-test.workspace = true
 tracing.workspace = true
 tss-esapi = { workspace = true, optional = true }
 url.workspace = true
@@ -54,3 +60,4 @@ zeroize.workspace = true
 [dev-dependencies]
 pretty_assertions.workspace = true
 tokio = { workspace = true, features = ["macros"] }
+tokio-test.workspace = true

@@ -36,6 +36,8 @@ use url::Url;
 
 use crate::crypto::{Crypto, DefaultKeyExchange};
 
+mod http;
+
 const MIME: HeaderValue = HeaderValue::from_static("application/cbor");
 const MESSAGE_TYPE: HeaderName = HeaderName::from_static("message-type");
 
