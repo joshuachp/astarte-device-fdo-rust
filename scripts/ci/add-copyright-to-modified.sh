@@ -2,7 +2,7 @@
 
 # This file is part of Astarte.
 #
-# Copyright 2025, 2026 SECO Mind Srl
+# Copyright 2026 SECO Mind Srl
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,10 +23,17 @@ set -exEuo pipefail
 # Trap -e errors
 trap 'echo "Exit status $? at line $LINENO from: $BASH_COMMAND"' ERR
 
-$CONTAINER run --rm -it \
-    --name fdo-client \
-    --network host \
-    --user 0:0 \
-    -v "$FDODIR":/tmp/fdo:z \
-    go-fdo-client:latest \
-    "$@"
+if [ $# != 2 ]; then
+    echo 'to use the script pass the base and head refs'
+    echo "$1 BASE_REF HEAD_REF"
+    exit 1
+fi
+
+base=$1
+head=$2
+
+git_file_names() {
+    git diff --name-only "$base" "$head"
+}
+
+git_file_names | ./scripts/copyright.sh
