@@ -67,6 +67,8 @@ impl<'a, C, S> Ctx<'a, C, S> {
 
 #[cfg(test)]
 pub(crate) mod tests {
+    use insta::assert_snapshot;
+
     macro_rules! with_settings {
         ($asserts:block) => {
             ::insta::with_settings!({
@@ -76,4 +78,11 @@ pub(crate) mod tests {
     }
 
     pub(crate) use with_settings;
+
+    #[test]
+    fn use_macro() {
+        with_settings!({
+            assert_snapshot!("using the macro");
+        });
+    }
 }
