@@ -1,6 +1,6 @@
 # This file is part of Astarte.
 #
-# Copyright 2025 SECO Mind Srl
+# Copyright 2025, 2026 SECO Mind Srl
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,3 +27,12 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+astarte-device-fdo.workspace = true
+clap = { workspace = true, features = ["derive"] }
+color-eyre.workspace = true
+eyre.workspace = true
+rustls.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+url.workspace = true
