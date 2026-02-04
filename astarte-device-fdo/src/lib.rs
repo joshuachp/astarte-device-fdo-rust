@@ -64,3 +64,25 @@ impl<'a, C, S> Ctx<'a, C, S> {
         &self.tls
     }
 }
+
+#[cfg(test)]
+pub(crate) mod tests {
+    use insta::assert_snapshot;
+
+    macro_rules! with_settings {
+        ($asserts:block) => {
+            ::insta::with_settings!({
+                snapshot_path => concat!(env!("CARGO_MANIFEST_DIR"), "/snapshots")
+            }, $asserts);
+        };
+    }
+
+    pub(crate) use with_settings;
+
+    #[test]
+    fn use_macro() {
+        with_settings!({
+            assert_snapshot!("using the macro");
+        });
+    }
+}
