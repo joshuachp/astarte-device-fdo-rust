@@ -46,7 +46,6 @@ coset.workspace = true
 futures-core.workspace = true
 futures-util.workspace = true
 http.workspace = true
-nix = { workspace = true, features = ["ioctl"] }
 p256 = { workspace = true, optional = true, default-features = false, features = ["ecdsa-core", "alloc"] }
 pin-project-lite.workspace = true
 rand = { workspace = true, default-features = false, features = ["os_rng", "thread_rng"] }
@@ -61,6 +60,7 @@ url.workspace = true
 zeroize.workspace = true
 
 [target.'cfg(target_os = "linux")'.dependencies]
+nix = { workspace = true, features = ["ioctl"] }
 tss-esapi = { workspace = true, optional = true }
 
 [dev-dependencies]
