@@ -244,6 +244,10 @@ astarte-send-to0:
     ./scripts/astarte/send-to0.sh
 
 [group('astarte')]
+astarte-send-to0-guid guid:
+    ./scripts/astarte/send-to0.sh '{{ guid }}'
+
+[group('astarte')]
 astarte-healty:
     ./scripts/astarte/healthy.sh
 

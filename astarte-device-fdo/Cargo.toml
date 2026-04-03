@@ -60,7 +60,6 @@ url.workspace = true
 zeroize.workspace = true
 
 [target.'cfg(target_os = "linux")'.dependencies]
-nix = { workspace = true, features = ["ioctl"] }
 tss-esapi = { workspace = true, optional = true }
 
 [dev-dependencies]
